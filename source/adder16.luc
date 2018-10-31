@@ -1,0 +1,27 @@
+module adder16 (
+    input alufn[6],
+    input a[16],  
+    input b[16],  
+    output out[16],  
+    output z,       
+    output n,       
+    output v 
+  ) {
+  
+  sig sum[16]; // sum  
+  sig xb[16];  // xb
+
+  always {
+    xb = b ^ 16x{alufn[0]}; // xb = XOR(B,alufn[0])
+    case(alufn[1:0]){
+    2b00:sum = a+b;     // summation         
+    2b01:sum = a-b;     // subtraction
+    2b10:sum = a*b;     // multiplication              
+    default:sum = a-b;  // default case to be subtraction
+  }
+  v = (a[15] & xb[15] & ~sum[15]) | (~a[15] & ~xb[15] & sum[15]);    // return true when overflows in addition
+  n = sum[15];                                                  // return true when S is negative
+  z = ~|sum;                                                   // return true when S outputs are aout = sum; ll zero
+  out = sum;                                                  // return sum as out 
+}
+}
